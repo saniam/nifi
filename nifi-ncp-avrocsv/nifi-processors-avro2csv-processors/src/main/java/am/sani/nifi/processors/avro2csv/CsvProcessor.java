@@ -104,7 +104,7 @@ public class CsvProcessor {
 		return new CsvBundle(printer, writer);
 	}
 
-	public static void processRecord(CSVPrinter printer, GenericRecord record, List<Column> columns)
+	public static List processRecord(CSVPrinter printer, GenericRecord record, List<Column> columns)
 			throws IOException {
 		List r = new ArrayList<>();
 		columns.forEach(c -> {
@@ -114,7 +114,9 @@ public class CsvProcessor {
 				r.add(c.getDefaultValue());
 			}
 		});
-		printer.printRecord(record);
+
+		printer.printRecord(r);
+		return r;
 	}
 
 	public static class CsvBundle {

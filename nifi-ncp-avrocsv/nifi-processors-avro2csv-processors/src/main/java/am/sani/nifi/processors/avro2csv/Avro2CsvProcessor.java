@@ -18,6 +18,7 @@ package am.sani.nifi.processors.avro2csv;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.CharArrayWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -189,22 +190,21 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 						out.write(bundle.getWriter().toString().getBytes());
 					}
 				} else {
-					List<Column> columns = CsvProcessor.extractColumns(schema, csvSortDirection.equals("D"),
-							csvSortFIELD.equals("F"));
+
 					try (final InputStream in = new BufferedInputStream(rawIn);
 							final OutputStream out = new BufferedOutputStream(rawOut);
 							final DataFileStream<GenericRecord> reader = new DataFileStream<>(in,
 									new GenericDatumReader<GenericRecord>())) {
+						List<Column> columns = CsvProcessor.extractColumns(reader.getSchema(),
+								csvSortDirection.equals("D"), csvSortFIELD.equals("F"));
 
-						// int recordCount = 0;
 						GenericRecord currRecord = null;
 						while (reader.hasNext()) {
 							currRecord = reader.next(currRecord);
-							// recordCount++;
-
 							CsvProcessor.processRecord(bundle.getPrinter(), currRecord, columns);
-							out.write(bundle.getWriter().toString().getBytes());
-
+							String fff = bundle.getWriter().toString();
+							List r = CsvProcessor.processRecord(bundle.getPrinter(), currRecord, columns);
+							out.write(fff.getBytes());
 						}
 
 					}
