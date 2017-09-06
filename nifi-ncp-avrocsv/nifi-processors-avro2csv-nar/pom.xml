@@ -34,7 +34,7 @@
 		</dependency>
 	</dependencies>
 
-	<name>Avro to CSV NIFI Custom Processor</name>
+	<name>Avro to CSV NIFI Custom Processor (NAR)</name>
 	<url>https://sani.am/ncp/avro2csv</url>
 	<organization>
 		<name>Saniam</name>

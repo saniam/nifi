@@ -18,7 +18,7 @@
 		<artifactId>nifi-ncp-avrocsv</artifactId>
 		<version>0.0.1</version>
 	</parent>
-
+	<name>Avro to CSV NIFI Custom Processor (JAR)</name>
 	<artifactId>nifi-processors-avro2csv-processors</artifactId>
 	<packaging>jar</packaging>
 

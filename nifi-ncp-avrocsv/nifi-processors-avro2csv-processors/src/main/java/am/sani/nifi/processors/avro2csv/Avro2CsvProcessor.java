@@ -90,13 +90,9 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 
 	public static final AllowableValue CSV_DELIMITER_DEFAULT = new AllowableValue("\n", "LF", "New line per record");
 
-	 
-
 	static final PropertyDescriptor SCHEMA = new PropertyDescriptor.Builder().name("Avro schema")
 			.description("If the Avro records do not contain the schema (datum only), it must be specified here.")
 			.addValidator(StandardValidators.NON_EMPTY_VALIDATOR).required(false).build();
-
-	 
 
 	static final PropertyDescriptor CSV_COMPATIBILITY = new PropertyDescriptor.Builder().name("CSV Compatibility")
 			.description(
@@ -131,7 +127,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 		super.init(context);
 
 		final List<PropertyDescriptor> properties = new ArrayList<>();
-	 
+
 		properties.add(SCHEMA);
 
 		properties.add(CSV_COMPATIBILITY);
@@ -160,7 +156,6 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 		if (flowFile == null) {
 			return;
 		}
- 
 
 		final String stringSchema = context.getProperty(SCHEMA).getValue();
 
@@ -170,8 +165,6 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 		final String csvSortFIELD = context.getProperty(CSV_HEADER_SORT_FIELD).getValue();
 
 		final boolean schemaLess = stringSchema != null;
-		List<Column> columns = CsvProcessor.extractColumns(schema, csvSortDirection.equals("D"),
-				csvSortFIELD.equals("F"));
 
 		try {
 			CsvBundle bundle = CsvProcessor.generateCsvPrinter(csvRecordDelimiter, csvCompatibility);
@@ -182,18 +175,22 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 					if (schema == null) {
 						schema = new Schema.Parser().parse(stringSchema);
 					}
+
+					List<Column> columns = CsvProcessor.extractColumns(schema, csvSortDirection.equals("D"),
+							csvSortFIELD.equals("F"));
+
 					try (final InputStream in = new BufferedInputStream(rawIn);
 							final OutputStream out = new BufferedOutputStream(rawOut)) {
 						final DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
 						final BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(in, null);
 						final GenericRecord record = reader.read(null, decoder);
 
-				 
-
 						CsvProcessor.processRecord(bundle.getPrinter(), record, columns);
 						out.write(bundle.getWriter().toString().getBytes());
 					}
 				} else {
+					List<Column> columns = CsvProcessor.extractColumns(schema, csvSortDirection.equals("D"),
+							csvSortFIELD.equals("F"));
 					try (final InputStream in = new BufferedInputStream(rawIn);
 							final OutputStream out = new BufferedOutputStream(rawOut);
 							final DataFileStream<GenericRecord> reader = new DataFileStream<>(in,
@@ -209,7 +206,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 							out.write(bundle.getWriter().toString().getBytes());
 
 						}
- 
+
 					}
 				}
 			});
