@@ -90,49 +90,13 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 
 	public static final AllowableValue CSV_DELIMITER_DEFAULT = new AllowableValue("\n", "LF", "New line per record");
 
-	// private static final byte[] EMPTY_JSON_OBJECT =
-	// "{}".getBytes(StandardCharsets.UTF_8);
-	//
-	// static final PropertyDescriptor CONTAINER_OPTIONS = new
-	// PropertyDescriptor.Builder().name("JSON container options")
-	// .description("Determines how stream of records is exposed: either as a
-	// sequence of single Objects ("
-	// + CONTAINER_NONE + ") (i.e. writing every Object to a new line), or as an
-	// array of Objects ("
-	// + CONTAINER_ARRAY + ").")
-	// .allowableValues(CONTAINER_NONE,
-	// CONTAINER_ARRAY).required(true).defaultValue(CONTAINER_ARRAY).build();
-	// static final PropertyDescriptor WRAP_SINGLE_RECORD = new
-	// PropertyDescriptor.Builder().name("Wrap Single Record")
-	// .description(
-	// "Determines if the resulting output for empty records or a single record
-	// should be wrapped in a container array as specified by '"
-	// + CONTAINER_OPTIONS.getName() + "'")
-	// .allowableValues("true",
-	// "false").defaultValue("false").required(true).build();
+	 
 
 	static final PropertyDescriptor SCHEMA = new PropertyDescriptor.Builder().name("Avro schema")
 			.description("If the Avro records do not contain the schema (datum only), it must be specified here.")
 			.addValidator(StandardValidators.NON_EMPTY_VALIDATOR).required(false).build();
 
-	// static final PropertyDescriptor CSV_COMPATIBILITY = new
-	// PropertyDescriptor.Builder().name("CSV Compatibility")
-	// .description(
-	// "The Compatibility of the CSV file {Default,Excel ,InformixUnload
-	// ,InformixUnloadCsv ,MySQL ,RFC4180 ,TDF}")
-	// .defaultValue("Default")
-	// .addValidator((final String subject, final String value, final
-	// ValidationContext context) -> {
-	//
-	// return new ValidationResult.Builder().subject(subject).input(value)
-	// .valid(value != null && !value.isEmpty() &&
-	// CsvProcessor.CSV_TYPES.contains(value))
-	// .explanation(subject
-	// + " can be only one of these values {Default,Excel ,InformixUnload
-	// ,InformixUnloadCsv ,MySQL ,RFC4180 ,TDF}")
-	// .build();
-	// ////////
-	// }).required(false).build();
+	 
 
 	static final PropertyDescriptor CSV_COMPATIBILITY = new PropertyDescriptor.Builder().name("CSV Compatibility")
 			.description(
@@ -167,8 +131,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 		super.init(context);
 
 		final List<PropertyDescriptor> properties = new ArrayList<>();
-		// properties.add(CONTAINER_OPTIONS);
-		// properties.add(WRAP_SINGLE_RECORD);
+	 
 		properties.add(SCHEMA);
 
 		properties.add(CSV_COMPATIBILITY);
@@ -197,15 +160,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 		if (flowFile == null) {
 			return;
 		}
-
-		// final String containerOption =
-		// context.getProperty(CONTAINER_OPTIONS).getValue();
-		// final boolean useContainer = containerOption.equals(CONTAINER_ARRAY);
-		// // Wrap a single record (inclusive of no records) only when a container is
-		// being
-		// // used
-		// final boolean wrapSingleRecord =
-		// context.getProperty(WRAP_SINGLE_RECORD).asBoolean() && useContainer;
+ 
 
 		final String stringSchema = context.getProperty(SCHEMA).getValue();
 
@@ -233,17 +188,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 						final BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(in, null);
 						final GenericRecord record = reader.read(null, decoder);
 
-						/*
-						 * // Schemaless records are singletons, so both useContainer and
-						 * wrapSingleRecord // need to be true before we wrap it with an array if
-						 * (useContainer && wrapSingleRecord) { out.write('['); }
-						 * 
-						 * final byte[] outputBytes = (record == null) ? EMPTY_JSON_OBJECT :
-						 * genericData.toString(record).getBytes(StandardCharsets.UTF_8);
-						 * out.write(outputBytes);
-						 * 
-						 * if (useContainer && wrapSingleRecord) { out.write(']'); }
-						 */
+				 
 
 						CsvProcessor.processRecord(bundle.getPrinter(), record, columns);
 						out.write(bundle.getWriter().toString().getBytes());
@@ -264,29 +209,7 @@ public class Avro2CsvProcessor extends AbstractProcessor {
 							out.write(bundle.getWriter().toString().getBytes());
 
 						}
-
-						/*
-						 * // Open container if desired output is an array format and there are are //
-						 * multiple records or // if configured to wrap single record if
-						 * (reader.hasNext() && useContainer || wrapSingleRecord) { out.write('['); }
-						 * 
-						 * // Determine the initial output record, inclusive if we should have an empty
-						 * set // of Avro records final byte[] outputBytes = (currRecord == null) ?
-						 * EMPTY_JSON_OBJECT :
-						 * genericData.toString(currRecord).getBytes(StandardCharsets.UTF_8);
-						 * out.write(outputBytes);
-						 * 
-						 * while (reader.hasNext()) { if (useContainer) { out.write(','); } else {
-						 * out.write('\n'); }
-						 * 
-						 * currRecord = reader.next(currRecord);
-						 * out.write(genericData.toString(currRecord).getBytes(StandardCharsets.UTF_8));
-						 * recordCount++; }
-						 * 
-						 * // Close container if desired output is an array format and there are
-						 * multiple // records or if // configured to wrap a single record if
-						 * (recordCount > 1 && useContainer || wrapSingleRecord) { out.write(']'); }
-						 */
+ 
 					}
 				}
 			});
